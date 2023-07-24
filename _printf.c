@@ -5,12 +5,9 @@
 #include <unistd.h>
 #define BUFF_SIZE 1024
 
-int _printf(const char *format, ...);
-void print_buffer(char buffer[], int *buffer_index);
-int handle_value(const char *format, int *index, va_list list, char buffer[], int *buffer_index);
 
 /**
- * _printf -funct producing output according to format
+ * _printf - funct producing output according to format
  * @format: character string of foramt
  * Return: chars printed
  */
@@ -46,7 +43,7 @@ int _printf(const char *format, ...)
 		{
 			print_buffer(buffer, &buffer_index);
 			i++;
-			printed_chars += handle_value(format, &i, list, buffer, &buffer_index);
+			printed_chars += handle_value(format, &i, list, buffer);
 		}
 	}
 	print_buffer(buffer, &buffer_index);
@@ -54,73 +51,4 @@ int _printf(const char *format, ...)
 	va_end(list);
 
 	return (printed_chars);
-}
-
-/**
- * print_buffer - prints a buffer when available
- * @buffer: buffer
- * @buffer_index: pointer to buffer index,represents length
- * Return: printed chars
- */
-
-void print_buffer(char buffer[], int *buffer_index)
-{
-	if (*buffer_index > 0)
-	{
-		write(1, &buffer[0], *buffer_index);
-	}
-	*buffer_index = 0;
-}
-
-/**
- * handle_value - handles format specifier and writes formatted
- * string to buffer
- * @format: string with specifier
- * @index: pointer to current index or index of specifier in string
- * @list: variable arhument list
- * @buffer: array of chars for buffer
- * Return: printed chars (number of ...)
- */
-
-int handle_value(const char *format, int *index, va_list list, char buffer[], int *buffer_index)
-{
-	int chars_printed = 0;
-	char *str, ch;
-
-	switch (format[*index])
-	{
-		case 's':
-		{
-			str = va_arg(list, char*);
-			while (*str)
-			{
-				buffer[(*index)++] = *str;
-				chars_printed++;
-				if (*index == BUFF_SIZE)
-					print_buffer(buffer, buffer_index);
-			}
-			break;
-		}
-		case 'c':
-		{
-			ch = va_arg(list, int);
-			buffer[(*index)++] = ch;
-			chars_printed++;
-			if (*index == BUFF_SIZE)
-				print_buffer(buffer, buffer_index);
-			break;
-		}
-		case '%':
-		{
-			buffer[(*index)++] = '%';
-			chars_printed++;
-			if (*index == BUFF_SIZE)
-				print_buffer(buffer, index);
-			break;
-		}
-
-		default:
-			break;
-	}
-	return (chars_printed);
 }
